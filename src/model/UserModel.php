@@ -8,6 +8,7 @@ class UserModel
 	private $ownAccounts;
 	private $thirdAccounts;
 
+	// Hago uso de Singleton ya que no se necesita más de una instancia de usuario
 	private function __construct($id, $name, $lastName)
 	{
 		$this->id = $id;
@@ -23,6 +24,7 @@ class UserModel
 			self::$user = new UserModel($id, $name, $lastName);
 		}
 		return self::$user;
+		// Si no existe la instancia de usuario la crea, luego la retorna
 	}
 
 	public function getId()
@@ -30,7 +32,8 @@ class UserModel
 		return self::$user->id;
 	}
 
-	public function getAccounts() {
+	public function getAccounts()
+	{
 		return self::$user->ownAccounts;
 	}
 
@@ -40,9 +43,9 @@ class UserModel
 		try {
 			$result = $conn->prepare("SELECT * FROM usuario WHERE cedula = :id");
 			$result->execute(array(":id" => self::$user->id));
-			$row = $result->rowCount();
-			if ($row === 1) {
+			if ($result->rowCount() === 1) {
 				return true;
+				// Retorna true si encuentra al usuario
 			}
 			return false;
 		} catch (Exception $e) {
@@ -88,12 +91,12 @@ class UserModel
 				$register = $query->fetch(PDO::FETCH_ASSOC);
 				if (password_verify($password, $register['clave'])) {
 					session_start();
+					// Se inicia sesión guardando los datos del usuario
 					$_SESSION['user'] = $register['cedula'];
 					$_SESSION['name'] = $register['nombres'];
 					$_SESSION['lastN'] = $register['apellidos'];
 					Connection::close($conn);
 					header("location:src/controller/menuController.php");
-					UserModel::getUser($_SESSION['user'], $_SESSION['name'], $_SESSION['lastN']);
 				} else {
 					return "Usuario o contraseña incorrecta";
 				}
@@ -122,6 +125,26 @@ class UserModel
 				);
 			}
 			return self::$user->ownAccounts;
+		} catch (Exception $e) {
+			return "Algo salió mal: {$e->getMessage()}";
+		} finally {
+			Connection::close($conn);
+		}
+	}
+
+	public function searchThirdsAccounts()
+	{
+		$conn = Connection::connect();
+		try {
+			$query = $conn->prepare("SELECT * FROM terceros WHERE cedula = :id");
+			$query->execute(array(":id" => self::$user->id));
+			while ($account = $query->fetch(PDO::FETCH_ASSOC)) {
+				self::$user->thirdAccounts[] = new Account(
+					$account['ncuenta'],
+					$account['cedula']
+				);
+			}
+			return self::$user->thirdAccounts;
 		} catch (Exception $e) {
 			return "Algo salió mal: {$e->getMessage()}";
 		} finally {

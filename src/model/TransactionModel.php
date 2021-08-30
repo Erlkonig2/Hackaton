@@ -57,11 +57,13 @@ class TransactionModel
 
   public function transferMoney()
   {
+    // Se obtiene el dinero en las dos cuentas
     $originMoney = Account::validateMoney($this->cOrigin, $this->money);
     $destinyMoney = Account::validateMoney($this->cDestiny);
     if (is_null($originMoney)) {
       return "No tienes suficiente dinero en tu cuenta para realizar esta transacción";
     }
+    // Validación del estado de las cuentas
     if (!Account::validateState($this->cOrigin)) {
       return "La cuenta de origen no se encuentra activa";
     } else if (!Account::validateState($this->cDestiny)) {
@@ -70,10 +72,12 @@ class TransactionModel
     $conn = Connection::connect();
     $deduction = $originMoney - $this->money;
     $increment = $destinyMoney + $this->money;
+    // Actualización de dinero en ambas cuentas
     if (
       Account::validateTransaction($this->cOrigin, $deduction)
       && Account::validateTransaction($this->cDestiny, $increment)
     ) {
+      // Almacenado de registro transacción
       try {
         $query = $conn->prepare("INSERT INTO transaccion(corigen, monto, cdestino, fecha_hora) 
         VALUES(:origin, :money, :destiny, NOW())");
@@ -87,5 +91,9 @@ class TransactionModel
         Connection::close($conn);
       }
     }
+  }
+
+  public static function transactionsList($origin = null, $destint = null) {
+    
   }
 }

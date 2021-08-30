@@ -6,7 +6,7 @@ class Account
 	private $money;
 	private $state;
 
-	public function __construct($nAccount, $client, $money, $state)
+	public function __construct($nAccount, $client, $money = null, $state = null)
 	{
 		$this->nAccount = $nAccount;
 		$this->client = $client;
@@ -42,6 +42,7 @@ class Account
 			$query->execute(array(":account" => $account));
 			$result = $query->fetch(PDO::FETCH_ASSOC);
 			if (!is_null($transfering)) {
+				// transfering es opcional, ya que no se necesita validar la cantidad de dinero en la cuenta destino
 				if ($transfering > $result['monto']) {
 					return null;
 				}
@@ -74,8 +75,6 @@ class Account
 
 	public static function validateTransaction($account, $money)
 	{
-		$deduction = null;
-		$increment = null;
 		$conn = Connection::connect();
 		try {
 			$query = $conn->prepare("UPDATE cuenta SET monto=:money WHERE ncuenta=:account");

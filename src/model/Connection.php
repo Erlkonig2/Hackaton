@@ -1,7 +1,7 @@
 <?php
 class Connection
 {
-  // Para hacer que no exista más de una conexión la declaramos estática
+  // Para hacer que no exista más de una conexión se establece estática
   private static $connection;
 
   public static function connect()
