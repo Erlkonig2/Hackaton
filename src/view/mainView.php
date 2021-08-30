@@ -30,10 +30,12 @@
       <h3>Cuenta origen</h3>");
       foreach ($origins as $origin) {
         buildAccountArticle(true, "left", $origin);
+        echo "<br>";
       }
       echo "<h3>Cuenta Destino</h3>";
       foreach ($destinies as $destiny) {
         buildAccountArticle(false, "right", $destiny);
+        echo "<br>";
       }
       echo ("<label for='money'>Monto transferir: </label>
       <input type='number' name='money' id='money'>
