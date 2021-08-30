@@ -43,4 +43,11 @@ if (isset($_GET['transfer'])) {
       }
     }
 }
+
+// Cerrar sesión
+if (isset($_POST['confirm'])) {
+  session_destroy();
+  header("location:../../");
+}
+
 require("../view/mainView.php");

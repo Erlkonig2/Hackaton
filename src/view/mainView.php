@@ -14,8 +14,8 @@
     <nav>
       <ul>
         <li><a href="<?php echo $_SERVER['PHP_SELF'] ?>?transaction=1">Transacciones bancarias</a></li>
-        <li><a href="">Cuentas propias</a></li>
-        <li><a href="">Salir</a></li>
+        <li><a href="">Estado de cuenta</a></li>
+        <li><a href="<?php echo $_SERVER['PHP_SELF'] ?>?exit=1">Salir</a></li>
       </ul>
     </nav>
   </header>
@@ -45,6 +45,14 @@
   }
   if (isset($msg)) {
     echo "<p class='advise'>$msg</p>";
+  }
+
+  if (isset($_GET['exit'])) {
+    echo ("<form action'" . $_SERVER['PHP_SELF'] . "' method='POST'
+      <p>¿Seguro de que quieres cerrar sesión?</p>
+      <input type='submit' name='confirm' value='Confirmar'>
+      <input type='submit' name='cancel' value='Cancelar'>
+      </form>");
   }
   ?>
 </body>
